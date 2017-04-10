@@ -9,9 +9,10 @@ This package implements joint model Number 14 and 15 in Table 1 of the below ref
 
 * Tensorflow, version >= r0.9 (https://www.tensorflow.org/versions/r0.9/get_started/index.html)
 
-**Usage**:
-```bash
-data_dir=data/ATIS_samples
+**Usage**  
+
+```
+data_dir=data/ATIS
 model_dir=model_tmp
 max_sequence_length=50  # max length for train/valid/test sequence
 use_local_context=False # boolean, whether to use local context
