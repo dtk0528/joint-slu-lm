@@ -20,6 +20,7 @@
 # author:    Erik Tjong Kim Sang <erikt@uia.ua.ac.be>
 
 use strict;
+no warnings;
 
 my $false = 0;
 my $true = 42;

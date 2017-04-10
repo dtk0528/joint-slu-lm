@@ -123,8 +123,8 @@ def get_perf(filename):
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE)
 
-    stdout, _ = proc.communicate(''.join(open(filename).readlines()))
-    for line in stdout.split('\n'):
+    stdout, _ = proc.communicate(''.join(open(filename).readlines()).encode('utf8'))
+    for line in stdout.decode('utf8').split('\n'):
         if 'accuracy' in line:
             out = line.split()
             break
@@ -225,13 +225,13 @@ def create_model(session, source_vocab_size, target_vocab_size, label_vocab_size
   return model_train, model_test
 
 def write_results_to_file(result_dict, idx2tag_vocab, result_out_file):
-  with open(result_out_file, 'wb') as f:
+  with open(result_out_file, 'w') as f:
     for key in sorted(result_dict):
       f.write('%d\t%s\n' % (key, idx2tag_vocab[result_dict[key]]))
         
 def train():
   print ('Applying Parameters:')
-  for k,v in FLAGS.__dict__['__flags'].iteritems():
+  for k,v in FLAGS.__dict__['__flags'].items():
     print ('%s: %s' % (k, str(v)))
   print("Preparing trec data in %s" % FLAGS.data_dir)
   vocab_path = ''
@@ -398,7 +398,7 @@ def train():
         if valid_tagging_result['f1'] > best_valid_score:
           best_valid_score = valid_tagging_result['f1']
           subprocess.call(['mv', current_taging_valid_out_file, current_taging_valid_out_file + '.best_f1_%.2f' % best_valid_score])
-          with open('%s.best_f1_%.2f' % (label_valid_out_file, best_valid_score), 'wb') as f:
+          with open('%s.best_f1_%.2f' % (label_valid_out_file, best_valid_score), 'w') as f:
             for i in range(len(valid_hyp_label_list)):
               f.write(valid_hyp_label_list[i] + '\n')
     
@@ -408,13 +408,13 @@ def train():
         if test_tagging_result['f1'] > best_test_score:
           best_test_score = test_tagging_result['f1']        
           subprocess.call(['mv', current_taging_test_out_file, current_taging_test_out_file + '.best_f1_%.2f' % best_test_score])
-          with open('%s.best_f1_%.2f' % (label_test_out_file, best_test_score), 'wb') as f:
+          with open('%s.best_f1_%.2f' % (label_test_out_file, best_test_score), 'w') as f:
             for i in range(len(test_hyp_label_list)):
               f.write(test_hyp_label_list[i] + '\n')
 
 def decode_file(test_file):
   print ('Applying Parameters:')
-  for k,v in FLAGS.__dict__['__flags'].iteritems():
+  for k,v in FLAGS.__dict__['__flags'].items():
     print ('%s: %s' % (k, str(v)))
 
   vocab_path = FLAGS.data_dir + '/in_vocab_1000.txt'
@@ -448,9 +448,9 @@ def decode_file(test_file):
     print ("Loaded model with source_vocab_size=%d, target_vocab_size=%d, and label_vocab_size=%d, and lm_vocab_size=%d." % (len(vocab), len(tag_vocab), len(label_vocab), len(LM_vocab)))
 
     def run_eval(data_set, decode_output_file):
-        with open(lm_test_output_file, 'wb') as f_lm:
-          with open(intent_test_output_file, 'wb') as f_intent:
-            with open(tagging_test_output_file, 'wb') as f_tagging:
+        with open(lm_test_output_file, 'w') as f_lm:
+          with open(intent_test_output_file, 'w') as f_intent:
+            with open(tagging_test_output_file, 'w') as f_tagging:
               eval_loss = 0.0
               bucket_id = 0
               count = 0

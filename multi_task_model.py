@@ -69,16 +69,16 @@ class MultiTaskModel(object):
     softmax_loss_function = None
 
     # Create the internal multi-layer cell for our RNN.
-    single_cell = tf.nn.rnn_cell.GRUCell(size)
+    single_cell = tf.contrib.rnn.GRUCell(size)
     if use_lstm:
       # use the customized rnn_cell, --> added trainable option in RNN
-      single_cell = tf.nn.rnn_cell.BasicLSTMCell(size, state_is_tuple=True)
+      single_cell = tf.contrib.rnn.BasicLSTMCell(size, state_is_tuple=True)
     cell = single_cell
     if num_layers > 1:
-      cell = tf.nn.rnn_cell.MultiRNNCell([single_cell] * num_layers)
+      cell = tf.contrib.rnn.MultiRNNCell([single_cell] * num_layers)
      
     if not forward_only and dropout_keep_prob < 1.0:
-      cell = tf.nn.rnn_cell.DropoutWrapper(cell,
+      cell = tf.contrib.rnn.DropoutWrapper(cell,
                                            input_keep_prob=dropout_keep_prob,
                                            output_keep_prob=dropout_keep_prob)
 
@@ -150,7 +150,7 @@ class MultiTaskModel(object):
 
       
     # get lm loss, use additional_inputs = sampled_tags_intents
-    sampled_tags_intents = [array_ops.concat(1, [sampled_tag, sampled_intent]) for sampled_tag, sampled_intent in zip(sampled_tags, sampled_intents)]
+    sampled_tags_intents = [array_ops.concat([sampled_tag, sampled_intent], 1) for sampled_tag, sampled_intent in zip(sampled_tags, sampled_intents)]
     self.lm_output, _, _, self.lm_loss_withRegularizers, self.lm_loss = seq_labeling.generate_task_output(
             encoder_outputs, sampled_tags_intents, encoder_state, self.encoder_inputs_shiftByOne, self.sequence_length, self.lm_vocab_size, self.lm_weights,
             buckets, softmax_loss_function=softmax_loss_function, use_attention=False, scope='lm', DNN_at_output=DNN_at_output, use_local_context=use_local_context,

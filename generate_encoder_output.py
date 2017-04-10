@@ -13,7 +13,7 @@ from tensorflow.python.framework import dtypes
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import embedding_ops
 from tensorflow.python.ops import math_ops
-from tensorflow.python.ops import rnn_cell
+from tensorflow.contrib.rnn.python.ops import rnn_cell
 from tensorflow.python.ops import rnn
 from tensorflow.python.ops import variable_scope
 from tensorflow.python.ops import init_ops
@@ -74,7 +74,7 @@ def rnn_with_output_feedback(cell, inputs,
   zero_intent_thres:  int, the intent contribution to context remain zero before this thres, 
                       and linear increase to 1 after that.
   '''
-  if not isinstance(cell, rnn_cell.RNNCell):
+  if not isinstance(cell, tf.contrib.rnn.RNNCell):
     raise TypeError("cell must be an instance of RNNCell")
   if not isinstance(inputs, list):
     raise TypeError("inputs must be a list")
@@ -117,7 +117,7 @@ def rnn_with_output_feedback(cell, inputs,
 
   state = cell.zero_state(batch_size, dtype)
   zero_output = array_ops.zeros(
-      array_ops.pack([batch_size, cell.output_size]), inputs[0].dtype)
+      array_ops.stack([batch_size, cell.output_size]), inputs[0].dtype)
   zero_output.set_shape(
       tensor_shape.TensorShape([fixed_batch_size.value, cell.output_size]))
 
@@ -128,11 +128,11 @@ def rnn_with_output_feedback(cell, inputs,
 
 #  prev_cell_output = zero_output
   zero_intent_embedding = array_ops.zeros(
-        array_ops.pack([batch_size, target1_emb_size]), inputs[0].dtype)
+        array_ops.stack([batch_size, target1_emb_size]), inputs[0].dtype)
   zero_intent_embedding.set_shape(
           tensor_shape.TensorShape([fixed_batch_size.value, target1_emb_size])) 
   zero_tag_embedding = array_ops.zeros(
-        array_ops.pack([batch_size, target2_emb_size]), inputs[0].dtype)
+        array_ops.stack([batch_size, target2_emb_size]), inputs[0].dtype)
   zero_tag_embedding.set_shape(
           tensor_shape.TensorShape([fixed_batch_size.value, target2_emb_size])) 
 
